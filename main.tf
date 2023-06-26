@@ -21,3 +21,12 @@ module "vpc" {
   source = "./modules/vpc/"
   tags   = var.tags
 }
+
+module "rds" {
+  source     = "./modules/rds"
+  tags       = var.tags
+  vpc        = module.vpc
+  ecs_sg     = module.ecs.ecs_sg
+  subnet_ids = keys(module.vpc.public_subnets)
+}
+
