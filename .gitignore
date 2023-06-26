@@ -1,0 +1,4 @@
+# Terraform provider cache
+.terraform
+# Terraform state
+*.tfstate
