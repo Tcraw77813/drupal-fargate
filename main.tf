@@ -30,3 +30,10 @@ module "rds" {
   subnet_ids = keys(module.vpc.public_subnets)
 }
 
+module "load_balancer" {
+  source  = "./modules/alb"
+  tags    = var.tags
+  vpc_id  = module.vpc.id
+  subnets = module.vpc.public_subnets
+}
+
