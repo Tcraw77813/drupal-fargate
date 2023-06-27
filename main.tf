@@ -4,7 +4,12 @@ terraform {
       source  = "hashicorp/aws"
       version = "~> 4.16"
     }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.5.0"
+    }
   }
+
   backend "local" {
     path = "terraform.tfstate"
   }
@@ -37,3 +42,21 @@ module "load_balancer" {
   subnets = module.vpc.public_subnets
 }
 
+module "ecs" {
+  source           = "./modules/ecs"
+  tags             = var.tags
+  vpc_id           = module.vpc.id
+  vpc_subnets      = keys(module.vpc.public_subnets)
+  lb_sg            = module.load_balancer.security_group
+  lb_tg_arn        = module.load_balancer.target_group_arn
+  efs_fs_id        = module.efs.fs_id
+  efs_access_point = module.efs.files_access_point
+}
+
+module "efs" {
+  source  = "./modules/efs"
+  tags    = var.tags
+  ecs_sg  = module.ecs.ecs_sg
+  vpc_id  = module.vpc.id
+  subnets = module.vpc.public_subnets
+}
